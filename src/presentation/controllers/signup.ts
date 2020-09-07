@@ -3,8 +3,10 @@ import { MissingParamError } from '../errors/missing-param-error'
 import { badRequest } from '../helpers/http-helper'
 export class SignUpController {
   handle(req: HttpRequest): HttpResponse {
-    if (!req.body.name) return badRequest(new MissingParamError('name'))
+    const requiredFields = ['name', 'email']
 
-    if (!req.body.email) return badRequest(new MissingParamError('email'))
+    for (const field of requiredFields) {
+      if (!req.body[field]) return badRequest(new MissingParamError(field))
+    }
   }
 }
