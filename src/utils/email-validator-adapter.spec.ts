@@ -1,11 +1,7 @@
 import validator from 'validator'
 import { EmailValidatorAdapter } from './email-validator-adapter'
 
-jest.mock('validator', () => ({
-  isEmail(): boolean {
-    return true
-  }
-}))
+jest.spyOn(validator, 'isEmail').mockReturnValue(true)
 
 const makeSut = (): EmailValidatorAdapter => {
   return new EmailValidatorAdapter()
