@@ -11,10 +11,6 @@ export class AccountMongoRepository implements IAddAccountRepository {
 
     const [accountData] = addAccount.ops
 
-    const { _id, ...accountWithoutId } = accountData
-
-    const accountModel = { ...accountWithoutId, id: _id }
-
-    return accountModel
+    return MongoHelper.map(accountData)
   }
 }
