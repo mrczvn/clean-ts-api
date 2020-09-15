@@ -1,3 +1,3 @@
-export interface EmailValidator {
+export interface IEmailValidator {
   isValid(email: string): boolean
 }

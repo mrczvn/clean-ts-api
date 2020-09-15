@@ -1,5 +1,5 @@
-import { HttpRequest, HttpResponse } from './http'
+import { IHttpRequest, IHttpResponse } from './http'
 
-export interface Controller {
-  handle(httpRequest: HttpRequest): Promise<HttpResponse>
+export interface IController {
+  handle(httpRequest: IHttpRequest): Promise<IHttpResponse>
 }

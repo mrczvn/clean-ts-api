@@ -1,14 +1,14 @@
 import { SignUpController } from './signup'
 import { MissingParamError, InvalidParamError, ServerError } from '../../errors'
 import {
-  EmailValidator,
-  AccountModel,
-  AddAccount,
-  AddAccountModel
+  IEmailValidator,
+  IAccountModel,
+  IAddAccount,
+  IAddAccountModel
 } from './signup-protocols'
 
-const makeEmailValidator = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
+const makeEmailValidator = (): IEmailValidator => {
+  class EmailValidatorStub implements IEmailValidator {
     isValid(email: string): boolean {
       return true
     }
@@ -17,9 +17,9 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub()
 }
 
-const makeAddAccount = (): AddAccount => {
-  class AddAccountStub implements AddAccount {
-    async add(account: AddAccountModel): Promise<AccountModel> {
+const makeAddAccount = (): IAddAccount => {
+  class AddAccountStub implements IAddAccount {
+    async add(account: IAddAccountModel): Promise<IAccountModel> {
       const fakeAccount = {
         id: 'valid_id',
         name: 'valid_name',
@@ -34,13 +34,13 @@ const makeAddAccount = (): AddAccount => {
   return new AddAccountStub()
 }
 
-interface SutTypes {
+interface ISutTypes {
   sut: SignUpController
-  emailValidatorStub: EmailValidator
-  addAccountStub: AddAccount
+  emailValidatorStub: IEmailValidator
+  addAccountStub: IAddAccount
 }
 
-const makeSut = (): SutTypes => {
+const makeSut = (): ISutTypes => {
   const emailValidatorStub = makeEmailValidator()
   const addAccountStub = makeAddAccount()
 
