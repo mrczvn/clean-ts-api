@@ -10,6 +10,9 @@ export default (app: Express): void => {
   const dir = join(__dirname, '../routes')
 
   readdirSync(dir)
-    .filter((files) => files.endsWith('routes.ts', files.length))
-    .map(async (file) => (await import(`${dir}/${file}`)).default(router))
+    .filter((files): boolean => files.endsWith('routes.ts', files.length))
+    .map(
+      async (file): Promise<any> =>
+        (await import(`${dir}/${file}`)).default(router)
+    )
 }
