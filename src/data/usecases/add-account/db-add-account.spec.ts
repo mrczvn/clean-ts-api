@@ -23,18 +23,24 @@ const makeEncrypter = (): IEncrypter => {
 const makeAddAccountRepository = (): IAddAccountRepository => {
   class AddAccountRepositoryStub implements IAddAccountRepository {
     async add(account: IAddAccountModel): Promise<IAccountModel> {
-      const fakeAccount = {
-        id: 'valid_id',
-        name: 'valid_name',
-        email: 'valid_email',
-        password: 'hashed_password'
-      }
-
-      return new Promise((resolve) => resolve(fakeAccount))
+      return new Promise((resolve) => resolve(makeFakeAccount()))
     }
   }
   return new AddAccountRepositoryStub()
 }
+
+const makeFakeAccount = (): IAccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email',
+  password: 'hashed_password'
+})
+
+const makeFakeAccountData = (): IAddAccountModel => ({
+  name: 'valid_name',
+  email: 'valid_email',
+  password: 'valid_password'
+})
 
 const makeSut = (): ISutTypes => {
   const encrypterStub = makeEncrypter()
@@ -55,13 +61,7 @@ describe('DbAddAccount Usecase', () => {
 
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
 
-    const account = {
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'valid_password'
-    }
-
-    await sut.add(account)
+    await sut.add(makeFakeAccountData())
 
     expect(encryptSpy).toHaveBeenCalledWith('valid_password')
   })
@@ -75,13 +75,7 @@ describe('DbAddAccount Usecase', () => {
         new Promise((resolve, reject) => reject(new Error()))
       )
 
-    const account = {
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'valid_password'
-    }
-
-    const promise = sut.add(account)
+    const promise = sut.add(makeFakeAccountData())
 
     await expect(promise).rejects.toThrow()
   })
@@ -91,19 +85,13 @@ describe('DbAddAccount Usecase', () => {
 
     const addSpy = jest.spyOn(addAccountRepositoryStub, 'add')
 
-    const account = {
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'valid_password'
-    }
+    await sut.add(makeFakeAccountData())
 
-    await sut.add(account)
+    const fakeAccount = makeFakeAccount()
 
-    expect(addSpy).toHaveBeenCalledWith({
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'hashed_password'
-    })
+    delete fakeAccount.id
+
+    expect(addSpy).toHaveBeenCalledWith(fakeAccount)
   })
 
   test('Should throw if AddAccountRepository throws', async () => {
@@ -115,13 +103,7 @@ describe('DbAddAccount Usecase', () => {
         new Promise((resolve, reject) => reject(new Error()))
       )
 
-    const account = {
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'valid_password'
-    }
-
-    const promise = sut.add(account)
+    const promise = sut.add(makeFakeAccountData())
 
     await expect(promise).rejects.toThrow()
   })
@@ -129,19 +111,8 @@ describe('DbAddAccount Usecase', () => {
   test('Should return an account on success', async () => {
     const { sut } = makeSut()
 
-    const account = {
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'valid_password'
-    }
+    const accountData = await sut.add(makeFakeAccountData())
 
-    const accountData = await sut.add(account)
-
-    expect(accountData).toEqual({
-      id: 'valid_id',
-      name: 'valid_name',
-      email: 'valid_email',
-      password: 'hashed_password'
-    })
+    expect(accountData).toEqual(makeFakeAccount())
   })
 })
