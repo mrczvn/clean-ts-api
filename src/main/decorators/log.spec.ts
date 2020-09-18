@@ -62,11 +62,7 @@ const makeSut = (): SutTypes => {
 
   const sut = new LogControllerDecorator(controllerStub, logErrorRepository)
 
-  return {
-    sut,
-    controllerStub,
-    logErrorRepository
-  }
+  return { sut, controllerStub, logErrorRepository }
 }
 
 describe('LogController Decorator', () => {
@@ -95,9 +91,7 @@ describe('LogController Decorator', () => {
 
     jest
       .spyOn(controllerStub, 'handle')
-      .mockReturnValueOnce(
-        new Promise((resolve) => resolve(makeFakeServerError()))
-      )
+      .mockResolvedValueOnce(makeFakeServerError())
 
     await sut.handle(makeFakeRequest())
 
