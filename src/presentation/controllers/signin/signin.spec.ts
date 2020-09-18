@@ -81,14 +81,14 @@ describe('SignIn Controller', () => {
     expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
   })
 
-  test('Should return 401 if invalid credentials are provided', async () => {
-    const { sut, authenticationStub } = makeSut()
+  test('Should call EmailValidator with correct email', async () => {
+    const { sut, emailValidatorStub } = makeSut()
 
-    jest.spyOn(authenticationStub, 'auth').mockResolvedValueOnce(null)
+    const isValidSpy = jest.spyOn(emailValidatorStub, 'isValid')
 
-    const httpResponse = await sut.handle(makeFakeRequest())
+    await sut.handle(makeFakeRequest())
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
 
   test('Should return 500 if EmailValidator throws', async () => {
@@ -103,14 +103,14 @@ describe('SignIn Controller', () => {
     expect(httpResponse).toEqual(serverError(new ServerError(null)))
   })
 
-  test('Should call EmailValidator with correct email', async () => {
-    const { sut, emailValidatorStub } = makeSut()
+  test('Should return 401 if invalid credentials are provided', async () => {
+    const { sut, authenticationStub } = makeSut()
 
-    const isValidSpy = jest.spyOn(emailValidatorStub, 'isValid')
+    jest.spyOn(authenticationStub, 'auth').mockResolvedValueOnce(null)
 
-    await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle(makeFakeRequest())
 
-    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')
+    expect(httpResponse).toEqual(unauthorized())
   })
 
   test('Should call Authentication with correct values', async () => {
@@ -123,5 +123,15 @@ describe('SignIn Controller', () => {
     const { email, password } = makeFakeRequest().body
 
     expect(authSpy).toHaveBeenCalledWith(email, password)
+  })
+
+  test('Should return 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+
+    jest.spyOn(authenticationStub, 'auth').mockRejectedValueOnce(new Error())
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
 })
