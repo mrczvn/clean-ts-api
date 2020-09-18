@@ -1,13 +1,15 @@
-import { IAuthentication } from '../../../domain/usecases/authentication'
-import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
+import { SignInController } from './signin'
+import {
+  IEmailValidator,
+  IAuthentication,
+  IHttpRequest
+} from './signin-protocols'
 import {
   badRequest,
   serverError,
   unauthorized
 } from '../../helpers/http-helper'
-import { IHttpRequest } from '../../protocols'
-import { IEmailValidator } from '../signup/signup-protocols'
-import { SignInController } from './signin'
+import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
 
 interface SutTypes {
   sut: SignInController
