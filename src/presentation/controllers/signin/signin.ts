@@ -24,7 +24,7 @@ export class SignInController implements IController {
 
       if (!isValidEmail) return badRequest(new InvalidParamError('email'))
     } catch (error) {
-      serverError(error)
+      return serverError(error)
     }
   }
 }
