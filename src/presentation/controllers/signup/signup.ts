@@ -32,19 +32,15 @@ export class SignUpController implements IController {
         if (!req.body[field]) return badRequest(new MissingParamError(field))
       }
 
-      const isValid = this.emailValidator.isValid(email)
+      const isValidEmail = this.emailValidator.isValid(email)
 
-      if (!isValid) return badRequest(new InvalidParamError('email'))
+      if (!isValidEmail) return badRequest(new InvalidParamError('email'))
 
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('passwordConfirmation'))
       }
 
-      const account = await this.addAccount.add({
-        name,
-        email,
-        password
-      })
+      const account = await this.addAccount.add({ name, email, password })
 
       return ok(account)
     } catch (error) {
