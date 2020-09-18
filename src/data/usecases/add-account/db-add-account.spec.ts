@@ -16,7 +16,6 @@ const makeEncrypter = (): IEncrypter => {
       return new Promise((resolve) => resolve('hashed_password'))
     }
   }
-
   return new EncrypterStub()
 }
 
@@ -48,11 +47,7 @@ const makeSut = (): ISutTypes => {
 
   const sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub)
 
-  return {
-    sut,
-    encrypterStub,
-    addAccountRepositoryStub
-  }
+  return { sut, encrypterStub, addAccountRepositoryStub }
 }
 
 describe('DbAddAccount Usecase', () => {
@@ -69,15 +64,11 @@ describe('DbAddAccount Usecase', () => {
   test('Should throw if Encrypter throws', async () => {
     const { sut, encrypterStub } = makeSut()
 
-    jest
-      .spyOn(encrypterStub, 'encrypt')
-      .mockReturnValueOnce(
-        new Promise((resolve, reject) => reject(new Error()))
-      )
+    jest.spyOn(encrypterStub, 'encrypt').mockRejectedValueOnce(new Error())
 
-    const promise = sut.add(makeFakeAccountData())
+    const accountData = sut.add(makeFakeAccountData())
 
-    await expect(promise).rejects.toThrow()
+    await expect(accountData).rejects.toThrow()
   })
 
   test('Should call AddAccountRepository with correct values', async () => {
@@ -99,13 +90,11 @@ describe('DbAddAccount Usecase', () => {
 
     jest
       .spyOn(addAccountRepositoryStub, 'add')
-      .mockReturnValueOnce(
-        new Promise((resolve, reject) => reject(new Error()))
-      )
+      .mockRejectedValueOnce(new Error())
 
-    const promise = sut.add(makeFakeAccountData())
+    const accountData = sut.add(makeFakeAccountData())
 
-    await expect(promise).rejects.toThrow()
+    await expect(accountData).rejects.toThrow()
   })
 
   test('Should return an account on success', async () => {
